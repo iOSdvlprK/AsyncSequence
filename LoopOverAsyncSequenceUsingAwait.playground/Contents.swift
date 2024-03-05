@@ -32,7 +32,7 @@ let endpointURL = URL(string: "https://earthquake.usgs.gov/earthquakes/feed/v1.0
 Task {
     for try await line in endpointURL.lines {
         print(line)
-    }    
+    }
 }
 
 /*
