@@ -34,6 +34,7 @@ let bitcoinPriceStream = AsyncStream(Double.self) { continuation in
     
     continuation.onTermination = { @Sendable _ in
         bitcoinPriceMonitor.stopUpdating()
+        print("Bitcoin price monitoring stream terminated.")
     }
     
     bitcoinPriceMonitor.startUpdating()
