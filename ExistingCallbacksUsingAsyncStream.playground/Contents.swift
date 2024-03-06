@@ -32,7 +32,9 @@ let bitcoinPriceStream = AsyncStream(Double.self) { continuation in
         continuation.yield($0)
     }
     
-    // continuation.onTermination = { _ in }
+    continuation.onTermination = { @Sendable _ in
+        bitcoinPriceMonitor.stopUpdating()
+    }
     
     bitcoinPriceMonitor.startUpdating()
 }
