@@ -26,15 +26,20 @@ bitcoinPriceMonitor.priceHandler = {
 
 bitcoinPriceMonitor.startUpdating() */
 
-let bitcoinPriceStream = AsyncStream(Double.self) { continuation in
+let bitcoinPriceStream = AsyncStream<Double> { continuation in
     let bitcoinPriceMonitor = BitcoinPriceMonitor()
     bitcoinPriceMonitor.priceHandler = {
         continuation.yield($0)
     }
     
-    continuation.onTermination = { @Sendable _ in
+    continuation.onTermination = { @Sendable termination in
+        switch termination {
+        case .finished:
+            print("Bitcoin price monitoring stream finished.")
+        case .cancelled:
+            print("Bitcoin price monitoring stream cancelled.")
+        }
         bitcoinPriceMonitor.stopUpdating()
-        print("Bitcoin price monitoring stream terminated.")
     }
     
     bitcoinPriceMonitor.startUpdating()
@@ -44,4 +49,8 @@ Task {
     for await bitcoinPrice in bitcoinPriceStream {
         print(bitcoinPrice)
     }
+    
+    // Finish the stream after 5 seconds
+    try await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
+    throw CancellationError()
 }
